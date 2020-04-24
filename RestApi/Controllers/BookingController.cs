@@ -27,6 +27,32 @@ namespace RestApi.Controllers
             _repository = repository;
             _mapper = mapper;
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetBookings()
+        {
+            var bookings = await _repository.Booking.GetAllBookingsAsync(trackChanges: false);
+
+            var bookingDtos = _mapper.Map<IEnumerable<BookingDto>>(bookings);
+
+            return Ok(bookingDtos);
+        }
+
+        [HttpGet("{id}", Name = "BookingById")]
+        public async Task<IActionResult> GetBooking(int id)
+        {
+            var booking = await _repository.Booking.GetBookingAsync(id, trackChanges: false);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            var bookingDto = _mapper.Map<BookingDto>(booking);
+            return Ok(bookingDto);
+
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateRecipe([FromBody] BookingForCreationDto booking)
         {
@@ -43,9 +69,10 @@ namespace RestApi.Controllers
             }
 
             if (room.Bookings.Any(x =>
-             ((booking.Start >= x.Start && booking.Start <= x.End) || (booking.End >= x.Start && booking.End <= x.End)) && x.RoomId == booking.RoomId))
+             ((booking.Start >= x.Start && booking.Start <= x.End) || (booking.End >= x.Start && booking.End <= x.End))
+                && x.RoomId == booking.RoomId))
             {
-                return Conflict("Room is already reserver for this time");
+                return Conflict("Room is already reserved for this time.");
             }
 
             var bookingEntity = _mapper.Map<Booking>(booking);
@@ -59,128 +86,20 @@ namespace RestApi.Controllers
             return CreatedAtRoute("BookingById", new { id = bookingToReturn.Id }, bookingToReturn);
         }
 
-
-        [HttpGet("{id}", Name = "BookingById")]
-        public async Task<IActionResult> GetRecipe(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBooking(int id)
         {
-            var recipe = await _repository.Booking.GetBookingAsync(id, trackChanges: false);
-            if (recipe == null)
+            var booking = await _repository.Booking.GetBookingAsync(id, trackChanges: false);
+            if (booking == null)
             {
                 return NotFound();
             }
-            else
-            {
-                var recipeDto = _mapper.Map<RecipeDto>(recipe);
-                return Ok(recipeDto);
-            }
+
+            _repository.Booking.DeleteBooking(booking);
+            await _repository.SaveAsync();
+
+            return NoContent();
         }
 
-
-
-        // [HttpGet, Authorize]
-        // public async Task<IActionResult> GetRecipes()
-        // {
-        //     var recipes = await _repository.Recipe.GetAllRecipesAsync(trackChanges: false);
-
-        //     var recipesDto = _mapper.Map<IEnumerable<RecipeDto>>(recipes);
-
-        //     return Ok(recipesDto);
-        // }
-
-
-
-        // [HttpGet("collection/({ids})", Name = "RecipeCollection"), Authorize]
-        // public async Task<IActionResult> GetRecipeCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
-        // {
-        //     if (ids == null)
-        //     {
-        //         return BadRequest("Parameter ids is null");
-        //     }
-
-        //     var recipeEntities = await _repository.Recipe.GetRecipesByIdsAsync(ids, trackChanges: false);
-
-        //     if (ids.Count() != recipeEntities.Count())
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     var recipesToReturn = _mapper.Map<IEnumerable<RecipeDto>>(recipeEntities);
-        //     return Ok(recipesToReturn);
-        // }
-
-        // [HttpPut, DisableRequestSizeLimit, Authorize]
-        // public async Task<IActionResult> UpdateRecipe([FromForm]Guid id, [ModelBinder(typeof(JsonWithFilesFormDataModelBinder), Name = "recipe")][FromForm] RecipeForCreationDto recipe, [FromForm] IFormFile file)
-        // {
-        //     if (recipe == null)
-        //     {
-        //         return BadRequest("RecipeForUpdateDto object is null");
-        //     }
-
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return UnprocessableEntity(ModelState);
-        //     }
-
-        //     var recipeEntity = await _repository.Recipe.GetRecipeAsync(id, trackChanges: true);
-
-        //     if (recipeEntity == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     var oldPhotoPath = recipeEntity.PhotoPath;
-
-        //     _photoService.DeletePhoto(oldPhotoPath);
-
-        //     var photoPath = _photoService.UploadFile(file);
-
-        //     _mapper.Map(recipe, recipeEntity);
-
-        //     recipeEntity.PhotoPath = photoPath;
-
-        //     await _repository.SaveAsync();
-
-        //     return NoContent();
-        // }
-
-        // [HttpDelete("{id}"), Authorize]
-        // public async Task<IActionResult> DeleteRecipe(Guid id)
-        // {
-        //     var recipe = await _repository.Recipe.GetRecipeAsync(id, trackChanges: false);
-        //     if (recipe == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     var photoPath = recipe.PhotoPath;
-
-        //     _photoService.DeletePhoto(photoPath);
-
-        //     _repository.Recipe.DeleteRecipe(recipe);
-        //     await _repository.SaveAsync();
-
-        //     return NoContent();
-        // }
-
-        // [HttpGet("photo/{id}")]
-        // public async Task<IActionResult> GetRecipePhoto(Guid id)
-        // {
-        //     var recipe = await _repository.Recipe.GetRecipeAsync(id, trackChanges: false);
-
-        //     if (recipe == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     else if(recipe.PhotoPath == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     var recipePhotoPath = recipe.PhotoPath;
-
-        //     var recipePhoto = await _photoService.GetPhoto(recipePhotoPath);
-
-        //     return File(recipePhoto, _photoService.GetContentType(recipePhotoPath), Path.GetFileName(recipePhotoPath));
-        // }
     }
 }
