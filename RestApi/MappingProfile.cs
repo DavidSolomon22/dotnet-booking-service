@@ -1,5 +1,6 @@
 using AutoMapper;
-using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Booking;
+using Entities.DataTransferObjects.Room;
 using Entities.Models;
 
 namespace RestApi
@@ -8,7 +9,10 @@ namespace RestApi
     {
         public MappingProfile()
         {
-            
+            CreateMap<BookingForCreationDto, Booking>();
+
+            CreateMap<RoomForCreationDto, Room>();
+            CreateMap<Room, RoomDto>();
         }
     }
 }
