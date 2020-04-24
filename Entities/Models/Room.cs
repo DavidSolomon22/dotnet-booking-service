@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Entities.Models
 {
     public class Room
@@ -7,6 +9,6 @@ namespace Entities.Models
         public bool HasWhiteboard { get; set; }
         public bool HasProjector { get; set; }
 
-        public Booking Booking { get; set; }
+        public IEnumerable<Booking> Bookings { get; set; }
     }
 }
