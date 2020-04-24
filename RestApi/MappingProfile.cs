@@ -9,7 +9,7 @@ namespace RestApi
     {
         public MappingProfile()
         {
-            CreateMap<BookingForCreationDto, Booking>();
+            CreateMap<BookingForCreationDto, Booking>().ReverseMap();
 
             CreateMap<RoomForCreationDto, Room>();
             CreateMap<Room, RoomDto>();

@@ -27,8 +27,6 @@ namespace RestApi.Controllers
             _repository = repository;
             _mapper = mapper;
         }
-
-
         [HttpPost]
         public async Task<IActionResult> CreateRecipe([FromBody] BookingForCreationDto booking)
         {
@@ -61,6 +59,7 @@ namespace RestApi.Controllers
             return CreatedAtRoute("BookingById", new { id = bookingToReturn.Id }, bookingToReturn);
         }
 
+
         [HttpGet("{id}", Name = "BookingById")]
         public async Task<IActionResult> GetRecipe(int id)
         {
@@ -77,18 +76,6 @@ namespace RestApi.Controllers
         }
 
 
-        //     var recipeEntities = _mapper.Map<IEnumerable<Recipe>>(recipeCollection);
-        //     foreach (var recipe in recipeEntities)
-        //     {
-        //         _repository.Recipe.CreateRecipe(recipe);
-        //     }
-        //     await _repository.SaveAsync();
-
-        //     var recipeCollectionToReturn = _mapper.Map<IEnumerable<RecipeDto>>(recipeEntities);
-        //     var ids = string.Join(",", recipeCollectionToReturn.Select(c => c.Id));
-
-        //     return CreatedAtRoute("RecipeCollection", new { ids }, recipeCollectionToReturn);
-        // }
 
         // [HttpGet, Authorize]
         // public async Task<IActionResult> GetRecipes()
