@@ -8,7 +8,6 @@ namespace Entities.Models
         public string Number { get; set; }
         public bool HasWhiteboard { get; set; }
         public bool HasProjector { get; set; }
-
-        public ICollection<Booking> Bookings { get; set; }
+        public virtual ICollection<Booking> Bookings { get; set; }
     }
 }

@@ -12,3 +12,4 @@ namespace Entities.DataTransferObjects.RoomDtos
         public ICollection<Booking> Bookings { get; set; }
     }
 }
+
