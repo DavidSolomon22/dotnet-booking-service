@@ -54,23 +54,21 @@ namespace RestApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRecipe([FromBody] BookingForCreationDto booking)
+        public async Task<IActionResult> CreateBooking([FromBody] BookingForCreationDto booking)
         {
             if (!ModelState.IsValid)
             {
                 return UnprocessableEntity(ModelState);
             }
 
-            var room = await _repository.Room.GetRoomAsync(booking.RoomId, false);
+            var room = await _repository.Room.GetRoomAsync(booking.RoomId, true);
 
             if (room == null)
             {
                 return BadRequest();
             }
 
-            if (room.Bookings.Any(x =>
-             ((booking.Start >= x.Start && booking.Start <= x.End) || (booking.End >= x.Start && booking.End <= x.End))
-                && x.RoomId == booking.RoomId))
+            if (room.Bookings.Any(x => (booking.Start.Ticks >= x.Start.Ticks && booking.Start.Ticks <= x.End.Ticks) || (booking.End.Ticks >= x.Start.Ticks && booking.End.Ticks <= x.End.Ticks)))
             {
                 return Conflict("Room is already reserved for this time.");
             }
