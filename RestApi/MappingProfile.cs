@@ -1,6 +1,6 @@
 using AutoMapper;
-using Entities.DataTransferObjects.Booking;
-using Entities.DataTransferObjects.Room;
+using Entities.DataTransferObjects.BookingDtos;
+using Entities.DataTransferObjects.RoomDtos;
 using Entities.Models;
 
 namespace RestApi

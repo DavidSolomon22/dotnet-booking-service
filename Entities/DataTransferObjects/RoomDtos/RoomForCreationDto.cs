@@ -1,14 +1,14 @@
 using System.Collections.Generic;
+using Entities.Models;
 
-namespace Entities.DataTransferObjects.Room
+namespace Entities.DataTransferObjects.RoomDtos
 {
-    public class RoomDto
+    public class RoomForCreationDto
     {
-        public int Id { get; set; }
         public string Number { get; set; }
         public bool HasWhiteboard { get; set; }
         public bool HasProjector { get; set; }
 
-        public ICollection<Entities.Models.Booking> Bookings { get; set; }
+        public ICollection<Booking> Bookings { get; set; }
     }
 }

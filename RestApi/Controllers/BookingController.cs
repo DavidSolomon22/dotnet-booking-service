@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
-using Entities.DataTransferObjects.Booking;
+using Entities.DataTransferObjects.BookingDtos;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
