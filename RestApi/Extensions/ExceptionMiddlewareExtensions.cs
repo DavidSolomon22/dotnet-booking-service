@@ -1,5 +1,4 @@
 using System.Net;
-using Contracts;
 using Entities.ErrorModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;

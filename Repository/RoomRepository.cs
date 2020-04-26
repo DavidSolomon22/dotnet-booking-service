@@ -7,7 +7,6 @@ using Entities;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Repository
 {
     public class RoomRepository : RepositoryBase<Room>, IRoomRepository

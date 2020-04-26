@@ -1,5 +1,4 @@
 using Entities.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Entities
@@ -8,7 +7,6 @@ namespace Entities
     {
         public RepositoryContext(DbContextOptions options) : base(options)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
