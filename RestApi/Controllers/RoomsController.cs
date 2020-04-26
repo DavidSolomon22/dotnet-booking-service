@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestApi.ModelBinders;
+using Entities.RequestFeatures;
 
 namespace RestApi.Controllers
 {
@@ -52,9 +53,19 @@ namespace RestApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRooms()
+        public async Task<IActionResult> GetRooms([FromQuery] RoomParameters roomParameters)
         {
-            var rooms = await _repository.Room.GetAllRoomsAsync(trackChanges: false);
+            var rooms = await _repository.Room.GetAllRoomsAsync(roomParameters, trackChanges: false);
+
+            var roomsDto = _mapper.Map<IEnumerable<RoomDto>>(rooms);
+
+            return Ok(roomsDto);
+        }
+
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailableRooms([FromQuery] RoomParameters roomParameters)
+        {
+            var rooms = await _repository.Room.GetAllRoomsAsync(roomParameters, trackChanges: false);
 
             var roomsDto = _mapper.Map<IEnumerable<RoomDto>>(rooms);
 
