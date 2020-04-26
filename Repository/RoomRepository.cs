@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Models;
+using Entities.RequestFeatures;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -17,9 +18,11 @@ namespace Repository
 
         public void CreateRoom(Room room) => Create(room);
 
-        public async Task<IEnumerable<Room>> GetAllRoomsAsync(bool trackChanges) =>
+        public async Task<IEnumerable<Room>> GetAllRoomsAsync(RoomParameters roomParameters, bool trackChanges) =>
             await FindAll(trackChanges)
             .OrderBy(r => r.Number)
+            .Skip((roomParameters.PageNumber - 1) * roomParameters.PageSize)
+            .Take(roomParameters.PageSize) 
             .ToListAsync();
 
         public async Task<Room> GetRoomAsync(int roomId, bool trackChanges) =>
