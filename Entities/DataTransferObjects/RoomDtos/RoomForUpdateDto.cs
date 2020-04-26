@@ -1,6 +1,6 @@
 namespace Entities.DataTransferObjects.RoomDtos
 {
-    public class RoomForCreationDto
+    public class RoomForUpdateDto
     {
         public string Number { get; set; }
         public bool HasWhiteboard { get; set; }
