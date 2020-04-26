@@ -25,7 +25,6 @@ namespace RestApi
             services.ConfigureSqlContext(Configuration);
             services.ConfigureRepositoryManager();
             services.AddAutoMapper(typeof(Startup));
-            services.AddAuthentication();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -34,33 +33,16 @@ namespace RestApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseDeveloperExceptionPage();
 
             app.ConfigureExceptionHandler();
 
-            if (env.IsProduction())
-            {
-                app.UseForwardedHeaders(new ForwardedHeadersOptions
-                {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-                });
-            }
-
-            if (env.IsDevelopment())
-            {
-                app.UseHttpsRedirection();
-            }
+            app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseCors("CorsPolicy");
 
             app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
