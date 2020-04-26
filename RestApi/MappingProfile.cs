@@ -14,6 +14,7 @@ namespace RestApi
             CreateMap<Room, RoomDto>();
 
             CreateMap<BookingForCreationDto, Booking>();
+            CreateMap<BookingForUpdateDto, Booking>();
             CreateMap<Booking, BookingDto>();
         }
     }

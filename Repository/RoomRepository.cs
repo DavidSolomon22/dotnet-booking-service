@@ -24,6 +24,7 @@ namespace Repository
 
         public async Task<Room> GetRoomAsync(int roomId, bool trackChanges) =>
             await FindByCondition(r => r.Id.Equals(roomId), trackChanges)
+            .Include(r => r.Bookings)
             .SingleOrDefaultAsync();
 
         public async Task<IEnumerable<Room>> GetRoomsByIdsAsync(IEnumerable<int> ids, bool trackChanges) =>

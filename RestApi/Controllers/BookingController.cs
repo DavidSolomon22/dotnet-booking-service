@@ -5,13 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Contracts;
-using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.BookingDtos;
 using Entities.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RestApi.ModelBinders;
 
 namespace RestApi.Controllers
 {
@@ -56,6 +52,10 @@ namespace RestApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingForCreationDto booking)
         {
+            if (booking == null)
+            {
+                return BadRequest("BookingForCreationDto object is null");
+            }
             if (!ModelState.IsValid)
             {
                 return UnprocessableEntity(ModelState);
@@ -68,7 +68,9 @@ namespace RestApi.Controllers
                 return BadRequest();
             }
 
-            if (room.Bookings.Any(x => (booking.Start.Ticks >= x.Start.Ticks && booking.Start.Ticks <= x.End.Ticks) || (booking.End.Ticks >= x.Start.Ticks && booking.End.Ticks <= x.End.Ticks)))
+            var reserved = CheckIfRoomIsReserved(room, booking.Start, booking.End);
+
+            if (reserved)
             {
                 return Conflict("Room is already reserved for this time.");
             }
@@ -97,6 +99,55 @@ namespace RestApi.Controllers
             await _repository.SaveAsync();
 
             return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBooking(int id, [FromBody] BookingForUpdateDto booking)
+        {
+            if (booking == null)
+            {
+                return BadRequest("BookingForUpdateDto object is null");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
+            var bookingEntity = await _repository.Booking.GetBookingAsync(id, trackChanges: true);
+
+            if (bookingEntity == null)
+            {
+                return NotFound();
+            }
+
+            var room = await _repository.Room.GetRoomAsync(bookingEntity.RoomId, trackChanges: false);
+
+            if (room == null)
+            {
+                return BadRequest();
+            }
+
+            var reserved = CheckIfRoomIsReserved(room, booking.Start, booking.End);
+
+            if (reserved)
+            {
+                return Conflict("Room is already reserved for this time.");
+            }
+
+            _mapper.Map(booking, bookingEntity);
+            await _repository.SaveAsync();
+
+            return NoContent();
+        }
+
+        private bool CheckIfRoomIsReserved(Room room, DateTime start, DateTime end)
+        {
+            if (room.Bookings.Any(x => (start.Ticks >= x.Start.Ticks && start.Ticks <= x.End.Ticks) || (end.Ticks >= x.Start.Ticks && end.Ticks <= x.End.Ticks)))
+            {
+                return true;
+            }
+            return false;
         }
 
     }
