@@ -74,7 +74,7 @@ namespace RestApi.Controllers
       {
         return NotFound();
       }
-      else
+      else  
       {
         var roomDto = _mapper.Map<RoomDto>(room);
         return Ok(roomDto);
