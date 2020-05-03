@@ -144,7 +144,7 @@ namespace RestApi.Controllers
         private bool CheckIfRoomIsReserved(Room room, DateTime start, DateTime end, int bookingId = -1)
         {
             var bookings = room.Bookings.Where(b => b.Id != bookingId);
-            var exist = bookings.Any(x => (start >= x.Start && start < x.End) || (end > x.Start && end <= x.End) || (x.Start > start && x.Start < end));
+            var exist = bookings.Any(x => (start >= x.Start && start < x.End) || (end > x.Start && end <= x.End) || (x.Start >= start && x.Start < end));
             if (exist)
             {
                 return true;
