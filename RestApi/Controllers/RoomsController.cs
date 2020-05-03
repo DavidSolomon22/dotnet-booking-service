@@ -1,17 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Contracts;
-using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.RoomDtos;
 using Entities.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RestApi.ModelBinders;
 using Entities.RequestFeatures;
 
 namespace RestApi.Controllers
@@ -65,7 +59,20 @@ namespace RestApi.Controllers
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableRooms([FromQuery] RoomParameters roomParameters)
         {
-            var rooms = await _repository.Room.GetAllRoomsAsync(roomParameters, trackChanges: false);
+            roomParameters.Start = roomParameters.Start.ToUniversalTime();
+            roomParameters.End = roomParameters.End.ToUniversalTime();
+
+            if (!roomParameters.ValidDateRange)
+            {
+                return BadRequest("Start date can't be earlier than end date.");
+            }
+
+            var rooms = await _repository.Room.GetAllAvailableRoomsAsync(roomParameters, trackChanges: false);
+
+            if (rooms.Count() == 0) 
+            {
+                return NoContent();
+            }
 
             var roomsDto = _mapper.Map<IEnumerable<RoomDto>>(rooms);
 

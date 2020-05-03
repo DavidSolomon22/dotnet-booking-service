@@ -25,6 +25,15 @@ namespace Repository
             .Take(roomParameters.PageSize) 
             .ToListAsync();
 
+        public async Task<IEnumerable<Room>> GetAllAvailableRoomsAsync(RoomParameters roomParameters, bool trackChanges) =>
+            await FindByCondition(r => !r.Bookings.Any(b => 
+                (b.Start > roomParameters.Start && b.Start < roomParameters.End) || 
+                (b.End > roomParameters.Start && b.End < roomParameters.End)), trackChanges)
+            .OrderBy(r => r.Number)
+            .Skip((roomParameters.PageNumber - 1) * roomParameters.PageSize)
+            .Take(roomParameters.PageSize)
+            .ToListAsync();
+
         public async Task<Room> GetRoomAsync(int roomId, bool trackChanges) =>
             await FindByCondition(r => r.Id.Equals(roomId), trackChanges)
             .Include(r => r.Bookings)
