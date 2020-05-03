@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects.BookingDtos;
 using Entities.Models;
+using Entities.RequestFeatures;
 using Microsoft.AspNetCore.Mvc;
 
 namespace RestApi.Controllers
@@ -26,9 +26,9 @@ namespace RestApi.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetBookings()
+        public async Task<IActionResult> GetBookings([FromQuery]BookingParameters bookingParameters)
         {
-            var bookings = await _repository.Booking.GetAllBookingsAsync(trackChanges: false);
+            var bookings = await _repository.Booking.GetAllBookingsAsync(bookingParameters, trackChanges: false);
 
             var bookingDtos = _mapper.Map<IEnumerable<BookingDto>>(bookings);
 
@@ -128,7 +128,7 @@ namespace RestApi.Controllers
                 return BadRequest();
             }
 
-            var reserved = CheckIfRoomIsReserved(room, booking.Start, booking.End);
+            var reserved = CheckIfRoomIsReserved(room, booking.Start, booking.End, id);
 
             if (reserved)
             {
@@ -141,9 +141,11 @@ namespace RestApi.Controllers
             return NoContent();
         }
 
-        private bool CheckIfRoomIsReserved(Room room, DateTime start, DateTime end)
+        private bool CheckIfRoomIsReserved(Room room, DateTime start, DateTime end, int bookingId = -1)
         {
-            if (room.Bookings.Any(x => (start.Ticks >= x.Start.Ticks && start.Ticks <= x.End.Ticks) || (end.Ticks >= x.Start.Ticks && end.Ticks <= x.End.Ticks)))
+            var bookings = room.Bookings.Where(b => b.Id != bookingId);
+            var exist = bookings.Any(x => (start >= x.Start && start < x.End) || (end > x.Start && end <= x.End) || (x.Start > start && x.Start < end));
+            if (exist)
             {
                 return true;
             }
