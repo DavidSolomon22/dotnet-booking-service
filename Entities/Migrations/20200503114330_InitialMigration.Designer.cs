@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace RestApi.Migrations
+namespace Entities.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20200424192121_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20200503114330_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,8 +39,7 @@ namespace RestApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomId")
-                        .IsUnique();
+                    b.HasIndex("RoomId");
 
                     b.ToTable("Bookings");
                 });
@@ -69,8 +68,8 @@ namespace RestApi.Migrations
             modelBuilder.Entity("Entities.Models.Booking", b =>
                 {
                     b.HasOne("Entities.Models.Room", "Room")
-                        .WithOne("Booking")
-                        .HasForeignKey("Entities.Models.Booking", "RoomId")
+                        .WithMany("Bookings")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
