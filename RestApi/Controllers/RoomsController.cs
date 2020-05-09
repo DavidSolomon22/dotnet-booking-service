@@ -57,14 +57,11 @@ namespace RestApi.Controllers
         }
 
         [HttpGet("available")]
-        public async Task<IActionResult> GetAvailableRooms([FromQuery] RoomParameters roomParameters)
+        public async Task<IActionResult> GetAvailableRooms([FromQuery] AvailableRoomParameters roomParameters)
         {
-            roomParameters.Start = roomParameters.Start.ToUniversalTime();
-            roomParameters.End = roomParameters.End.ToUniversalTime();
-
             if (!roomParameters.ValidDateRange)
             {
-                return BadRequest("Start date can't be earlier than end date.");
+                return BadRequest(new { message = "Start date can't be earlier than end date." });
             }
 
             var rooms = await _repository.Room.GetAllAvailableRoomsAsync(roomParameters, trackChanges: false);
