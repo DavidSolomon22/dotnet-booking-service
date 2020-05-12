@@ -8,57 +8,57 @@ using RestApi.Extensions;
 
 namespace RestApi
 {
-  public class Startup
-  {
-    public Startup(IConfiguration configuration)
+    public class Startup
     {
-      Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-      services.ConfigureCors();
-      services.ConfigureSqlContext(Configuration);
-      services.ConfigureRepositoryManager();
-      services.AddAutoMapper(typeof(Startup));
-
-      services.AddControllers().AddNewtonsoftJson(options =>
-          options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-      );
-
-      services.AddSwaggerGen(c =>
+        public Startup(IConfiguration configuration)
         {
-          c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-        });
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.ConfigureCors();
+            services.ConfigureSqlContext(Configuration);
+            services.ConfigureRepositoryManager();
+            services.AddAutoMapper(typeof(Startup));
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
+
+            services.AddSwaggerGen(c =>
+              {
+                  c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+              });
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseDeveloperExceptionPage();
+
+            app.ConfigureExceptionHandler();
+
+            app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+            app.UseCors("CorsPolicy");
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;
+            });
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
     }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-      app.UseDeveloperExceptionPage();
-
-      app.ConfigureExceptionHandler();
-
-      app.UseHttpsRedirection();
-
-      app.UseStaticFiles();
-      app.UseCors("CorsPolicy");
-
-      app.UseSwagger();
-
-      app.UseSwaggerUI(c =>
-      {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = string.Empty;
-      });
-
-      app.UseRouting();
-
-      app.UseEndpoints(endpoints =>
-      {
-        endpoints.MapControllers();
-      });
-    }
-  }
 }
