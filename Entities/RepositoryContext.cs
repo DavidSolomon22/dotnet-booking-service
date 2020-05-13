@@ -1,5 +1,6 @@
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Entities
 {
@@ -7,6 +8,16 @@ namespace Entities
     {
         public RepositoryContext(DbContextOptions options) : base(options)
         {
+        }
+
+        public static readonly Microsoft.Extensions.Logging.LoggerFactory _myLoggerFactory =
+            new LoggerFactory(new[] {
+                new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
+            });
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLoggerFactory(_myLoggerFactory);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
